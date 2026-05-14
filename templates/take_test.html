@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Online Test{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Header -->
+    <div class="glass-card mb-4 p-3 px-4 d-flex justify-content-between align-items-center bg-white bg-opacity-50">
+        <h3 class="fw-bold mb-0 text-dark"><i class="bi bi-journal-text text-primary"></i> Online Test</h3>
+        <div class="timer bg-danger bg-opacity-10 text-danger px-3 py-2 rounded-pill fw-bold border border-danger border-opacity-25 shadow-sm">
+            <i class="bi bi-clock-history"></i> <span id="timer">10:00</span>
+        </div>
+    </div>
+
+    <form method="POST" action="/submit_test" id="testForm">
+
+        <input type="hidden" name="subject" value="{{ subject }}">
+        <input type="hidden" name="question_ids" value="{% for q in questions %}{{ q[0] }},{% endfor %}">
+
+        {% for q in questions %}
+        <div class="glass-card p-4 mb-4">
+            <h5 class="fw-bold text-dark mb-4">
+                <span class="badge bg-primary rounded-circle me-2 p-2">{{ loop.index }}</span>
+                {{ q[1] }}
+            </h5>
+
+            <div class="ps-2 ps-md-4">
+                <div class="form-check custom-radio mb-3 p-3 border rounded-3 bg-white bg-opacity-50 align-items-center d-flex">
+                    <input class="form-check-input mt-0 me-3 shadow-none border-secondary" type="radio" name="{{ q[0] }}" value="1" id="q{{ q[0] }}o1" required style="width: 1.25rem; height: 1.25rem;">
+                    <label class="form-check-label w-100 fs-6 cursor-pointer" for="q{{ q[0] }}o1">{{ q[2] }}</label>
+                </div>
+                <div class="form-check custom-radio mb-3 p-3 border rounded-3 bg-white bg-opacity-50 align-items-center d-flex">
+                    <input class="form-check-input mt-0 me-3 shadow-none border-secondary" type="radio" name="{{ q[0] }}" value="2" id="q{{ q[0] }}o2" style="width: 1.25rem; height: 1.25rem;">
+                    <label class="form-check-label w-100 fs-6 cursor-pointer" for="q{{ q[0] }}o2">{{ q[3] }}</label>
+                </div>
+                <div class="form-check custom-radio mb-3 p-3 border rounded-3 bg-white bg-opacity-50 align-items-center d-flex">
+                    <input class="form-check-input mt-0 me-3 shadow-none border-secondary" type="radio" name="{{ q[0] }}" value="3" id="q{{ q[0] }}o3" style="width: 1.25rem; height: 1.25rem;">
+                    <label class="form-check-label w-100 fs-6 cursor-pointer" for="q{{ q[0] }}o3">{{ q[4] }}</label>
+                </div>
+                <div class="form-check custom-radio mb-3 p-3 border rounded-3 bg-white bg-opacity-50 align-items-center d-flex">
+                    <input class="form-check-input mt-0 me-3 shadow-none border-secondary" type="radio" name="{{ q[0] }}" value="4" id="q{{ q[0] }}o4" style="width: 1.25rem; height: 1.25rem;">
+                    <label class="form-check-label w-100 fs-6 cursor-pointer" for="q{{ q[0] }}o4">{{ q[5] }}</label>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <button type="submit" class="btn btn-success fw-bold w-100 py-3 rounded-pill shadow mb-5 d-flex align-items-center justify-content-center gap-2">
+            <i class="bi bi-check2-circle fs-5"></i> Submit Test
+        </button>
+
+    </form>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Highlight selected option visually
+document.querySelectorAll('.form-check-input').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const name = this.name;
+        // removing active from all sibling options
+        document.querySelectorAll(`input[name="${name}"]`).forEach(sibling => {
+            sibling.closest('.custom-radio').classList.remove('bg-primary-subtle', 'border-primary');
+            sibling.closest('.custom-radio').classList.add('bg-white', 'border', 'bg-opacity-50');
+        });
+        // adding active style to clicked one
+        this.closest('.custom-radio').classList.remove('bg-white', 'border', 'bg-opacity-50');
+        this.closest('.custom-radio').classList.add('bg-primary-subtle', 'border-primary');
+    });
+});
+
+// Timer Logic
+let timeLeft = 600; // 10 minutes
+
+function startTimer() {
+    let timer = setInterval(function() {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+
+        document.getElementById("timer").innerText =
+            minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+
+        timeLeft--;
+
+        if (timeLeft < 0) {
+            clearInterval(timer);
+            const overlay = document.createElement("div");
+            overlay.style.cssText = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:bold;color:red;backdrop-filter:blur(5px);";
+            overlay.innerHTML = "<div class='text-center'><i class='bi bi-hourglass-bottom fs-1'></i><br>Time's up! Submitting test...</div>";
+            document.body.appendChild(overlay);
+            
+            setTimeout(() => document.getElementById("testForm").submit(), 2000);
+        }
+    }, 1000);
+}
+
+window.onload = startTimer;
+</script>
+<style>
+    .cursor-pointer { cursor: pointer; }
+    .custom-radio { transition: all 0.2s ease-in-out; }
+    .custom-radio:hover { border-color: rgba(13, 110, 253, 0.5) !important; background-color: rgba(13, 110, 253, 0.05) !important; }
+</style>
+{% endblock %}

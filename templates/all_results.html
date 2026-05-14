@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Analytics{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-graph-up-arrow text-success"></i> Student Analytics</h2>
+        <a href="/teacher_dashboard" class="btn btn-outline-secondary btn-sm px-3 rounded-pill glass-card">Back</a>
+    </div>
+
+    <div class="glass-card table-glass p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle text-center mb-0 border-0">
+                <thead>
+                    <tr class="text-uppercase small flex-nowrap">
+                        <th scope="col" class="py-3 text-start ps-4 text-nowrap">Student Name</th>
+                        <th scope="col" class="py-3 text-nowrap">Subject</th>
+                        <th scope="col" class="py-3 text-nowrap">Score</th>
+                        <th scope="col" class="py-3 text-nowrap">Percentage</th>
+                        <th scope="col" class="py-3 text-end pe-4 text-nowrap">Date Taken</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in results %}
+                    <tr class="border-light border-bottom">
+                        <td class="py-3 text-start ps-4 fw-bold text-dark text-nowrap">
+                            <i class="bi bi-person-circle text-secondary me-2"></i> {{ r[0] }}
+                        </td>
+                        <td class="py-3 text-nowrap"><span class="badge bg-primary bg-opacity-10 text-primary px-3 rounded-pill">{{ r[1] }}</span></td>
+                        <td class="py-3 fw-bold text-nowrap">{{ r[2] }} / {{ r[3] }}</td>
+                        <td class="py-3 text-nowrap">
+                            {% set pct = (r[2]/r[3]*100)|round(2) %}
+                            <div class="d-inline-flex align-items-center justify-content-center gap-2">
+                                <span class="fw-bold {{ 'text-success' if pct >= 60 else 'text-danger' }}">{{ pct }}%</span>
+                            </div>
+                        </td>
+                        <td class="py-3 text-end pe-4 text-secondary small text-nowrap">{{ r[4] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="py-5 text-secondary">
+                            <i class="bi bi-inbox fs-1 opacity-50 block mb-2"></i>
+                            <p class="m-0">No student results found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

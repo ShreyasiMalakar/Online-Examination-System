@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Results{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-graph-up-arrow text-success"></i> Test History</h2>
+        <a href="/student_dashboard" class="btn btn-outline-secondary btn-sm px-3 rounded-pill glass-card">Back</a>
+    </div>
+
+    <div class="glass-card table-glass p-0 overflow-hidden shadow-sm">
+        <div class="table-responsive">
+            <table class="table align-middle text-center mb-0 border-0">
+                <thead>
+                    <tr class="text-uppercase small">
+                        <th scope="col" class="py-3 text-start ps-4"><i class="bi bi-calendar3 me-2"></i> Date</th>
+                        <th scope="col" class="py-3">Score</th>
+                        <th scope="col" class="py-3">Questions</th>
+                        <th scope="col" class="py-3 text-end pe-4">Performance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in results %}
+                    <tr class="border-light border-bottom">
+                        <td class="py-3 text-start ps-4 fw-medium text-dark"><span class="badge bg-light text-dark shadow-sm">{{ r[2] }}</span></td>
+                        <td class="py-3 fw-bold text-primary">{{ r[0] }}</td>
+                        <td class="py-3">{{ r[1] }}</td>
+                        <td class="py-3 text-end pe-4">
+                            {% set pct = (r[0]/r[1]*100)|round(2) %}
+                            <div class="d-inline-flex align-items-center gap-2">
+                                <span class="fw-bold {{ 'text-success' if pct >= 60 else 'text-danger' }}">{{ pct }}%</span>
+                                <div class="progress" style="height: 8px; width: 60px;">
+                                    <div class="progress-bar {{ 'bg-success' if pct >= 60 else 'bg-danger' }}" role="progressbar" style="width: {{ pct }}%;" aria-valuenow="{{ pct }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="py-5 text-secondary">
+                            <i class="bi bi-file-earmark-x fs-1 opacity-50 block mb-2"></i>
+                            <p class="m-0">No past results available. Start taking tests to see your history!</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

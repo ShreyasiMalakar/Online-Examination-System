@@ -1,0 +1,384 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard — Analytics{% endblock %}
+
+{% block extra_css %}
+.stat-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(31,38,135,0.2);
+}
+.stat-card .stat-icon {
+    width: 56px; height: 56px;
+    border-radius: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+}
+.stat-card .stat-value { font-size: 2rem; font-weight: 800; line-height: 1; }
+.stat-card .stat-label { font-size: 0.82rem; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .stat-decoration { position: absolute; bottom: -15px; right: -15px; width: 90px; height: 90px; border-radius: 50%; opacity: 0.08; }
+
+.chart-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px rgba(31,38,135,0.12);
+    padding: 1.5rem;
+    height: 100%;
+}
+.chart-card .chart-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 0.25rem; }
+.chart-card .chart-subtitle { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem; }
+
+.welcome-banner-t {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 1.5rem;
+    padding: 2rem 2.5rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+.welcome-banner-t::after {
+    content: ''; position: absolute; top: -50%; right: -20%;
+    width: 300px; height: 300px;
+    background: rgba(255,255,255,0.08); border-radius: 50%;
+}
+
+.recent-table th {
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-secondary); font-weight: 600;
+    border-bottom: 2px solid rgba(108,99,255,0.15);
+}
+.recent-table td { vertical-align: middle; font-size: 0.9rem; }
+
+.score-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 0.3rem 0.8rem; border-radius: 2rem;
+    font-weight: 700; font-size: 0.82rem;
+}
+.score-excellent { background: rgba(16,185,129,0.15); color: #059669; }
+.score-good { background: rgba(59,130,246,0.15); color: #2563eb; }
+.score-average { background: rgba(245,158,11,0.15); color: #d97706; }
+.score-poor { background: rgba(239,68,68,0.15); color: #dc2626; }
+
+.rank-badge {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.85rem;
+}
+
+.quick-action {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--glass-bg); backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem; text-decoration: none;
+    color: var(--text-primary); transition: all 0.3s ease;
+}
+.quick-action:hover { transform: translateX(6px); box-shadow: 0 8px 25px rgba(31,38,135,0.15); color: var(--text-primary); }
+.quick-action .action-icon {
+    width: 44px; height: 44px; border-radius: 0.75rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
+}
+
+@keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.animate-in { animation: fade-up 0.5s ease forwards; }
+.animate-delay-1 { animation-delay: 0.1s; opacity: 0; }
+.animate-delay-2 { animation-delay: 0.2s; opacity: 0; }
+.animate-delay-3 { animation-delay: 0.3s; opacity: 0; }
+.animate-delay-4 { animation-delay: 0.4s; opacity: 0; }
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner-t mb-4 animate-in">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="fw-bold mb-1" style="font-size: 1.75rem;">Welcome, {{ name }} 🎓</h2>
+                <p class="mb-0 opacity-75">Your class analytics at a glance. Monitor and manage student performance.</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="/create_question" class="btn btn-light fw-bold rounded-pill px-4 py-2 shadow-sm">
+                    <i class="bi bi-plus-circle me-1"></i> Create Question
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3 animate-in animate-delay-1">
+            <div class="stat-card">
+                <div class="stat-icon bg-primary bg-opacity-10 text-primary mb-2"><i class="bi bi-people-fill"></i></div>
+                <div class="stat-value text-primary">{{ total_students }}</div>
+                <div class="stat-label mt-1">Total Students</div>
+                <div class="stat-decoration bg-primary"></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3 animate-in animate-delay-2">
+            <div class="stat-card">
+                <div class="stat-icon bg-warning bg-opacity-10 text-warning mb-2"><i class="bi bi-question-circle-fill"></i></div>
+                <div class="stat-value text-warning">{{ total_questions }}</div>
+                <div class="stat-label mt-1">Questions Bank</div>
+                <div class="stat-decoration bg-warning"></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3 animate-in animate-delay-3">
+            <div class="stat-card">
+                <div class="stat-icon bg-success bg-opacity-10 text-success mb-2"><i class="bi bi-file-earmark-check"></i></div>
+                <div class="stat-value text-success">{{ total_submissions }}</div>
+                <div class="stat-label mt-1">Submissions</div>
+                <div class="stat-decoration bg-success"></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3 animate-in animate-delay-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-info bg-opacity-10 text-info mb-2"><i class="bi bi-speedometer2"></i></div>
+                <div class="stat-value text-info">{{ class_avg }}%</div>
+                <div class="stat-label mt-1">Class Average</div>
+                <div class="stat-decoration bg-info"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1: Subject Avg Bar + Score Distribution Doughnut -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-bar-chart-line text-primary me-1"></i> Subject-wise Class Average</div>
+                <div class="chart-subtitle">Average scores across all students by subject</div>
+                <div style="height: 280px;"><canvas id="subjBarChart"></canvas></div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-pie-chart-fill text-success me-1"></i> Grade Distribution</div>
+                <div class="chart-subtitle">All test attempts categorized</div>
+                <div class="d-flex justify-content-center" style="height: 220px;"><canvas id="distDoughnut"></canvas></div>
+                <div class="d-flex flex-wrap justify-content-center gap-2 mt-3" style="font-size:0.75rem;">
+                    <span><span class="d-inline-block rounded-circle me-1" style="width:9px;height:9px;background:#10b981;"></span>Excellent</span>
+                    <span><span class="d-inline-block rounded-circle me-1" style="width:9px;height:9px;background:#3b82f6;"></span>Good</span>
+                    <span><span class="d-inline-block rounded-circle me-1" style="width:9px;height:9px;background:#f59e0b;"></span>Average</span>
+                    <span><span class="d-inline-block rounded-circle me-1" style="width:9px;height:9px;background:#ef4444;"></span>Poor</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2: Monthly Trend + Tests per Subject Pie -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-graph-up-arrow text-info me-1"></i> Monthly Submissions</div>
+                <div class="chart-subtitle">Test activity trend over recent months</div>
+                <div style="height: 260px;"><canvas id="monthlyChart"></canvas></div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-diagram-2 text-warning me-1"></i> Tests per Subject</div>
+                <div class="chart-subtitle">Popularity of each subject</div>
+                <div class="d-flex justify-content-center" style="height: 260px;"><canvas id="subjPieChart"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 3: Top Performers + Recent Submissions + Quick Actions -->
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-trophy-fill text-warning me-1"></i> Top Performers</div>
+                <div class="chart-subtitle">Students with highest average scores</div>
+                {% if top_performers %}
+                <div class="mt-2">
+                    {% for p in top_performers %}
+                    <div class="d-flex align-items-center gap-3 py-2 {% if not loop.last %}border-bottom{% endif %}" style="border-color: rgba(0,0,0,0.05) !important;">
+                        <span class="rank-badge {% if loop.index == 1 %}bg-warning text-dark{% elif loop.index == 2 %}bg-secondary bg-opacity-25 text-dark{% elif loop.index == 3 %}bg-warning bg-opacity-25 text-dark{% else %}bg-light text-secondary{% endif %}">
+                            {{ loop.index }}
+                        </span>
+                        <div class="flex-grow-1">
+                            <div class="fw-bold" style="font-size:0.92rem;">{{ p[0] }}</div>
+                            <div style="font-size:0.75rem;color:var(--text-secondary);">{{ p[2] }} tests taken</div>
+                        </div>
+                        <span class="score-badge {% if p[1] >= 80 %}score-excellent{% elif p[1] >= 60 %}score-good{% elif p[1] >= 40 %}score-average{% else %}score-poor{% endif %}">
+                            {{ p[1]|round(1) }}%
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-secondary">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>No data yet
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-clock-history text-primary me-1"></i> Recent Submissions</div>
+                <div class="chart-subtitle">Latest student test attempts</div>
+                {% if recent_submissions %}
+                <div class="table-responsive">
+                    <table class="table table-borderless recent-table mb-0">
+                        <thead><tr><th>Student</th><th>Subject</th><th>Score</th><th>Date</th></tr></thead>
+                        <tbody>
+                            {% for s in recent_submissions %}
+                            <tr>
+                                <td class="fw-semibold">{{ s[0] }}</td>
+                                <td>{{ s[1] }}</td>
+                                <td>
+                                    {% set pct = (s[2] / s[3] * 100)|round(0)|int if s[3] else 0 %}
+                                    <span class="score-badge {% if pct >= 80 %}score-excellent{% elif pct >= 60 %}score-good{% elif pct >= 40 %}score-average{% else %}score-poor{% endif %}">
+                                        {{ s[2] }}/{{ s[3] }}
+                                    </span>
+                                </td>
+                                <td class="text-secondary" style="font-size:0.8rem;">{{ s[4] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-secondary">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>No submissions yet
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="d-flex flex-column gap-3 h-100">
+                <div class="fw-bold" style="font-size:1.05rem;"><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:var(--accent-color);"></span> Quick Actions</div>
+                <a href="/create_question" class="quick-action">
+                    <div class="action-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-plus-circle-fill"></i></div>
+                    <div><div class="fw-bold" style="font-size:0.92rem;">Create Questions</div><div style="font-size:0.75rem;color:var(--text-secondary);">Add to question bank</div></div>
+                </a>
+                <a href="/manage_questions" class="quick-action">
+                    <div class="action-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-list-check"></i></div>
+                    <div><div class="fw-bold" style="font-size:0.92rem;">Manage Questions</div><div style="font-size:0.75rem;color:var(--text-secondary);">Edit & review</div></div>
+                </a>
+                <a href="/all_results" class="quick-action">
+                    <div class="action-icon bg-success bg-opacity-10 text-success"><i class="bi bi-table"></i></div>
+                    <div><div class="fw-bold" style="font-size:0.92rem;">All Results</div><div style="font-size:0.75rem;color:var(--text-secondary);">Full student data</div></div>
+                </a>
+                <a href="/leaderboard" class="quick-action">
+                    <div class="action-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-trophy"></i></div>
+                    <div><div class="fw-bold" style="font-size:0.92rem;">Leaderboard</div><div style="font-size:0.75rem;color:var(--text-secondary);">Top performers</div></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.plugins.legend.display = false;
+
+    const subjLabels = {{ subj_labels|safe }};
+    const subjAvgs = {{ subj_avgs|safe }};
+    const scoreDist = {{ score_dist|safe }};
+    const testsSubjLabels = {{ tests_subj_labels|safe }};
+    const testsSubjCounts = {{ tests_subj_counts|safe }};
+    const monthlyLabels = {{ monthly_labels|safe }};
+    const monthlyCounts = {{ monthly_counts|safe }};
+
+    // Color palette
+    const palette = ['#6c63ff','#48c6ef','#f093fb','#f5576c','#fda085','#4facfe','#43e97b','#fa709a'];
+
+    // ── Subject Bar Chart ──
+    const barCtx = document.getElementById('subjBarChart').getContext('2d');
+    const barGrad = subjLabels.map((_, i) => {
+        const g = barCtx.createLinearGradient(0, 0, 0, 280);
+        const c = palette[i % palette.length];
+        g.addColorStop(0, c); g.addColorStop(1, c + '44');
+        return g;
+    });
+    new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: subjLabels,
+            datasets: [{
+                data: subjAvgs,
+                backgroundColor: barGrad,
+                borderRadius: 10, borderSkipped: false,
+                barThickness: 40
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, max: 100, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { callback: v => v + '%' } },
+                x: { grid: { display: false }, ticks: { font: { weight: 600 } } }
+            },
+            plugins: { tooltip: { backgroundColor: 'rgba(45,55,72,0.9)', padding: 10, cornerRadius: 8, callbacks: { label: ctx => ' Avg: ' + ctx.parsed.y + '%' } } }
+        }
+    });
+
+    // ── Grade Distribution Doughnut ──
+    new Chart(document.getElementById('distDoughnut'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Excellent','Good','Average','Poor'],
+            datasets: [{ data: scoreDist, backgroundColor: ['#10b981','#3b82f6','#f59e0b','#ef4444'], borderWidth: 3, borderColor: 'rgba(255,255,255,0.9)', hoverOffset: 8 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { tooltip: { backgroundColor: 'rgba(45,55,72,0.9)', padding: 10, cornerRadius: 8 } } }
+    });
+
+    // ── Monthly Submissions Area Chart ──
+    const monthCtx = document.getElementById('monthlyChart').getContext('2d');
+    const mGrad = monthCtx.createLinearGradient(0, 0, 0, 260);
+    mGrad.addColorStop(0, 'rgba(102,126,234,0.3)'); mGrad.addColorStop(1, 'rgba(102,126,234,0.01)');
+    new Chart(monthCtx, {
+        type: 'line',
+        data: {
+            labels: monthlyLabels,
+            datasets: [{
+                data: monthlyCounts, borderColor: '#667eea', backgroundColor: mGrad,
+                borderWidth: 3, fill: true, tension: 0.4,
+                pointBackgroundColor: '#fff', pointBorderColor: '#667eea', pointBorderWidth: 2, pointRadius: 5
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' }, ticks: { stepSize: 1 } },
+                x: { grid: { display: false } }
+            },
+            plugins: { tooltip: { backgroundColor: 'rgba(45,55,72,0.9)', padding: 10, cornerRadius: 8, callbacks: { label: ctx => ' ' + ctx.parsed.y + ' submissions' } } }
+        }
+    });
+
+    // ── Tests per Subject Pie ──
+    new Chart(document.getElementById('subjPieChart'), {
+        type: 'polarArea',
+        data: {
+            labels: testsSubjLabels,
+            datasets: [{ data: testsSubjCounts, backgroundColor: palette.slice(0, testsSubjLabels.length).map(c => c + 'aa'), borderWidth: 2, borderColor: '#fff' }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: true, position: 'bottom', labels: { padding: 12, font: { size: 11 }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { backgroundColor: 'rgba(45,55,72,0.9)', padding: 10, cornerRadius: 8 } },
+            scales: { r: { ticks: { display: false }, grid: { color: 'rgba(0,0,0,0.05)' } } }
+        }
+    });
+});
+</script>
+{% endblock %}

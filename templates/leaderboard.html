@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Leaderboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .top-rank-1 { background: linear-gradient(to right, rgba(255, 215, 0, 0.2), rgba(255, 255, 255, 0.5)); border-left: 5px solid gold !important; }
+    .top-rank-2 { background: linear-gradient(to right, rgba(192, 192, 192, 0.2), rgba(255, 255, 255, 0.5)); border-left: 5px solid silver !important; }
+    .top-rank-3 { background: linear-gradient(to right, rgba(205, 127, 50, 0.2), rgba(255, 255, 255, 0.5)); border-left: 5px solid #cd7f32 !important; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    
+    <div class="text-center mb-5">
+        <div class="d-inline-flex bg-warning bg-opacity-10 text-warning rounded-circle p-3 mb-3 shadow-sm border border-warning">
+            <i class="bi bi-trophy-fill fs-1"></i>
+        </div>
+        <h2 class="fw-bold text-dark">Global Leaderboard</h2>
+        <p class="text-secondary">Top performing students across all subjects</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-10">
+            <div class="glass-card table-glass p-0 overflow-hidden shadow">
+                <div class="table-responsive">
+                    <table class="table align-middle text-center mb-0 border-0">
+                        <thead>
+                            <tr class="text-uppercase small">
+                                <th scope="col" class="py-3">Rank</th>
+                                <th scope="col" class="py-3 text-start ps-4">Student Name</th>
+                                <th scope="col" class="py-3">Subject</th>
+                                <th scope="col" class="py-3">Score</th>
+                                <th scope="col" class="py-3">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in data %}
+                            <tr class="border-light {% if loop.index == 1 %}top-rank-1{% elif loop.index == 2 %}top-rank-2{% elif loop.index == 3 %}top-rank-3{% else %}border-start border-5 border-transparent{% endif %}">
+                                <td class="py-3">
+                                    {% if loop.index == 1 %} <i class="bi bi-award-fill text-warning fs-4"></i>
+                                    {% elif loop.index == 2 %} <i class="bi bi-award-fill text-secondary fs-4"></i>
+                                    {% elif loop.index == 3 %} <i class="bi bi-award-fill" style="color: #cd7f32; font-size: 1.5rem;"></i>
+                                    {% else %} <span class="fw-bold text-secondary">#{{ loop.index }}</span> {% endif %}
+                                </td>
+                                <td class="py-3 text-start ps-4 fw-bold text-dark">
+                                    {{ row[0] }}
+                                    {% if loop.index == 1 %} <span class="badge bg-warning ms-2 shadow-sm text-dark"><i class="bi bi-star-fill"></i> Top</span> {% endif %}
+                                </td>
+                                <td class="py-3"><span class="badge bg-primary bg-opacity-10 text-primary px-3 rounded-pill">{{ row[3] }}</span></td>
+                                <td class="py-3 fw-bold">{{ row[1] }} <span class="text-secondary fw-normal">/ {{ row[2] }}</span></td>
+                                <td class="py-3">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <span class="fw-bold">{{ (row[1]/row[2]*100)|round(2) }}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="py-5 text-secondary">
+                                    <i class="bi bi-clipboard-x fs-1 opacity-50 block mb-2"></i>
+                                    <p class="m-0">No records found. Take a test to appear on the leaderboard!</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="/student_dashboard" class="btn btn-outline-secondary rounded-pill px-4 py-2 glass-card fw-bold">
+                    <i class="bi bi-house-door me-2"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

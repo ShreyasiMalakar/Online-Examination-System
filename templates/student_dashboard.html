@@ -1,0 +1,528 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard — Analytics{% endblock %}
+
+{% block extra_css %}
+/* ─── Stat Cards ─── */
+.stat-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(31,38,135,0.2);
+}
+.stat-card .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+.stat-card .stat-label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.stat-card .stat-decoration {
+    position: absolute;
+    bottom: -15px;
+    right: -15px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    opacity: 0.08;
+}
+
+/* ─── Chart Cards ─── */
+.chart-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px rgba(31,38,135,0.12);
+    padding: 1.5rem;
+    height: 100%;
+}
+.chart-card .chart-title {
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin-bottom: 0.25rem;
+}
+.chart-card .chart-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+/* ─── Section Header ─── */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+}
+.section-header .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    display: inline-block;
+    animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* ─── Recent Table ─── */
+.recent-table th {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    border-bottom: 2px solid rgba(108,99,255,0.15);
+}
+.recent-table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+.score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0.3rem 0.8rem;
+    border-radius: 2rem;
+    font-weight: 700;
+    font-size: 0.82rem;
+}
+.score-excellent { background: rgba(16,185,129,0.15); color: #059669; }
+.score-good { background: rgba(59,130,246,0.15); color: #2563eb; }
+.score-average { background: rgba(245,158,11,0.15); color: #d97706; }
+.score-poor { background: rgba(239,68,68,0.15); color: #dc2626; }
+
+/* ─── Quick Actions ─── */
+.quick-action {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 1rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+.quick-action:hover {
+    transform: translateX(6px);
+    box-shadow: 0 8px 25px rgba(31,38,135,0.15);
+    color: var(--text-primary);
+}
+.quick-action .action-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+/* ─── Animated Count ─── */
+@keyframes fade-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.animate-in { animation: fade-up 0.5s ease forwards; }
+.animate-delay-1 { animation-delay: 0.1s; opacity: 0; }
+.animate-delay-2 { animation-delay: 0.2s; opacity: 0; }
+.animate-delay-3 { animation-delay: 0.3s; opacity: 0; }
+.animate-delay-4 { animation-delay: 0.4s; opacity: 0; }
+
+/* ─── Welcome Banner ─── */
+.welcome-banner {
+    background: linear-gradient(135deg, #6c63ff 0%, #48c6ef 100%);
+    border-radius: 1.5rem;
+    padding: 2rem 2.5rem;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+.welcome-banner::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+}
+.welcome-banner::before {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    right: 10%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+
+    <!-- Welcome Banner -->
+    <div class="welcome-banner mb-4 animate-in">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="fw-bold mb-1" style="font-size: 1.75rem;">
+                    Welcome back, {{ name }} 👋
+                </h2>
+                <p class="mb-0 opacity-75">Here's your performance overview. Keep pushing towards excellence!</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="/select_subject" class="btn btn-light fw-bold rounded-pill px-4 py-2 shadow-sm">
+                    <i class="bi bi-pencil-square me-1"></i> Take a Test
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3 animate-in animate-delay-1">
+            <div class="stat-card">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="stat-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-journal-check"></i></div>
+                </div>
+                <div class="stat-value text-primary" id="stat-tests">{{ total_tests }}</div>
+                <div class="stat-label mt-1">Tests Taken</div>
+                <div class="stat-decoration bg-primary"></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3 animate-in animate-delay-2">
+            <div class="stat-card">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="stat-icon bg-success bg-opacity-10 text-success"><i class="bi bi-graph-up"></i></div>
+                </div>
+                <div class="stat-value text-success">{{ avg_score }}%</div>
+                <div class="stat-label mt-1">Avg Score</div>
+                <div class="stat-decoration bg-success"></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3 animate-in animate-delay-3">
+            <div class="stat-card">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="stat-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-trophy"></i></div>
+                </div>
+                <div class="stat-value text-warning">{{ highest_score }}</div>
+                <div class="stat-label mt-1">Best Score</div>
+                <div class="stat-decoration bg-warning"></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3 animate-in animate-delay-4">
+            <div class="stat-card">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="stat-icon bg-info bg-opacity-10 text-info"><i class="bi bi-star"></i></div>
+                </div>
+                <div class="stat-value text-info" style="font-size:1.3rem;">{{ best_subject }}</div>
+                <div class="stat-label mt-1">Best Subject</div>
+                <div class="stat-decoration bg-info"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1: Trend + Radar -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="chart-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="chart-title"><i class="bi bi-activity text-primary me-1"></i> Performance Trend</div>
+                        <div class="chart-subtitle">Your score percentage across recent tests</div>
+                    </div>
+                </div>
+                <div class="chart-wrapper" style="height: 280px;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-diagram-3 text-info me-1"></i> Subject Mastery</div>
+                <div class="chart-subtitle">Average scores per subject</div>
+                <div class="chart-wrapper" style="height: 280px;">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2: Doughnut + Recent Results + Quick Actions -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-4">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-pie-chart text-success me-1"></i> Score Distribution</div>
+                <div class="chart-subtitle">How your scores are spread out</div>
+                <div class="chart-wrapper d-flex justify-content-center" style="height: 240px;">
+                    <canvas id="doughnutChart"></canvas>
+                </div>
+                <div class="d-flex flex-wrap justify-content-center gap-3 mt-3" style="font-size:0.78rem;">
+                    <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#10b981;"></span> Excellent (≥80%)</span>
+                    <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#3b82f6;"></span> Good (60-79%)</span>
+                    <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#f59e0b;"></span> Average (40-59%)</span>
+                    <span><span class="d-inline-block rounded-circle me-1" style="width:10px;height:10px;background:#ef4444;"></span> Poor (<40%)</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="chart-card">
+                <div class="chart-title"><i class="bi bi-clock-history text-warning me-1"></i> Recent Results</div>
+                <div class="chart-subtitle">Your latest test attempts</div>
+                {% if recent_results %}
+                <div class="table-responsive">
+                    <table class="table table-borderless recent-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Score</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in recent_results %}
+                            <tr>
+                                <td class="fw-semibold">{{ r[0] }}</td>
+                                <td>
+                                    {% set pct = (r[1] / r[2] * 100)|round(0)|int if r[2] else 0 %}
+                                    <span class="score-badge {% if pct >= 80 %}score-excellent{% elif pct >= 60 %}score-good{% elif pct >= 40 %}score-average{% else %}score-poor{% endif %}">
+                                        {{ r[1] }}/{{ r[2] }}
+                                        <span style="font-size:0.7rem;opacity:0.8;">({{ pct }}%)</span>
+                                    </span>
+                                </td>
+                                <td class="text-secondary" style="font-size:0.82rem;">{{ r[3] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5 text-secondary">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    No results yet. Take your first test!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-3">
+            <div class="d-flex flex-column gap-3 h-100">
+                <div class="section-header mb-0">
+                    <span class="dot"></span>
+                    <span class="fw-bold" style="font-size:1.05rem;">Quick Actions</span>
+                </div>
+                <a href="/select_subject" class="quick-action">
+                    <div class="action-icon bg-primary bg-opacity-10 text-primary"><i class="bi bi-pencil-square"></i></div>
+                    <div>
+                        <div class="fw-bold" style="font-size:0.92rem;">Take Test</div>
+                        <div style="font-size:0.75rem; color: var(--text-secondary);">Start a new exam</div>
+                    </div>
+                </a>
+                <a href="/results" class="quick-action">
+                    <div class="action-icon bg-success bg-opacity-10 text-success"><i class="bi bi-bar-chart-fill"></i></div>
+                    <div>
+                        <div class="fw-bold" style="font-size:0.92rem;">All Results</div>
+                        <div style="font-size:0.75rem; color: var(--text-secondary);">Full history</div>
+                    </div>
+                </a>
+                <a href="/leaderboard" class="quick-action">
+                    <div class="action-icon bg-warning bg-opacity-10 text-warning"><i class="bi bi-trophy-fill"></i></div>
+                    <div>
+                        <div class="fw-bold" style="font-size:0.92rem;">Leaderboard</div>
+                        <div style="font-size:0.75rem; color: var(--text-secondary);">Top performers</div>
+                    </div>
+                </a>
+                <a href="/study_materials" class="quick-action">
+                    <div class="action-icon bg-danger bg-opacity-10 text-danger"><i class="bi bi-journal-bookmark"></i></div>
+                    <div>
+                        <div class="fw-bold" style="font-size:0.92rem;">Study Space</div>
+                        <div style="font-size:0.75rem; color: var(--text-secondary);">Course materials</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.plugins.legend.display = false;
+
+    const trendLabels = {{ trend_labels|safe }};
+    const trendScores = {{ trend_scores|safe }};
+    const subjLabels = {{ subj_labels|safe }};
+    const subjScores = {{ subj_scores|safe }};
+    const scoreDist  = {{ score_dist|safe }};
+
+    // ── Performance Trend (Line Chart with gradient fill) ──
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    const gradient = trendCtx.createLinearGradient(0, 0, 0, 280);
+    gradient.addColorStop(0, 'rgba(108,99,255,0.25)');
+    gradient.addColorStop(1, 'rgba(108,99,255,0.01)');
+
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: trendLabels,
+            datasets: [{
+                label: 'Score %',
+                data: trendScores,
+                borderColor: '#6c63ff',
+                backgroundColor: gradient,
+                borderWidth: 3,
+                pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#6c63ff',
+                pointBorderWidth: 2,
+                pointRadius: 5,
+                pointHoverRadius: 7,
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    grid: { color: 'rgba(0,0,0,0.04)' },
+                    ticks: { callback: v => v + '%', font: { weight: 500 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { weight: 500 } }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(45,55,72,0.9)',
+                    padding: 12,
+                    cornerRadius: 10,
+                    titleFont: { size: 13, weight: 600 },
+                    bodyFont: { size: 12 },
+                    callbacks: { label: ctx => ' Score: ' + ctx.parsed.y + '%' }
+                }
+            },
+            interaction: { intersect: false, mode: 'index' }
+        }
+    });
+
+    // ── Subject Radar Chart ──
+    if(subjLabels.length > 0) {
+        new Chart(document.getElementById('radarChart'), {
+            type: 'radar',
+            data: {
+                labels: subjLabels,
+                datasets: [{
+                    label: 'Your Average',
+                    data: subjScores,
+                    borderColor: '#48c6ef',
+                    backgroundColor: 'rgba(72,198,239,0.15)',
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#48c6ef',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { stepSize: 25, backdropColor: 'transparent', font: { size: 10 } },
+                        grid: { color: 'rgba(0,0,0,0.06)' },
+                        pointLabels: { font: { size: 11, weight: 600 }, color: '#4a5568' }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        backgroundColor: 'rgba(45,55,72,0.9)',
+                        padding: 10,
+                        cornerRadius: 8,
+                        callbacks: { label: ctx => ' ' + ctx.parsed.r + '%' }
+                    }
+                }
+            }
+        });
+    } else {
+        document.getElementById('radarChart').parentElement.innerHTML = '<div class="text-center text-secondary py-5"><i class="bi bi-diagram-3 fs-1 d-block mb-2"></i>Take tests to see subject data</div>';
+    }
+
+    // ── Score Distribution Doughnut ──
+    new Chart(document.getElementById('doughnutChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Excellent', 'Good', 'Average', 'Poor'],
+            datasets: [{
+                data: scoreDist,
+                backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
+                borderWidth: 3,
+                borderColor: 'rgba(255,255,255,0.9)',
+                hoverBorderColor: '#ffffff',
+                hoverOffset: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '68%',
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(45,55,72,0.9)',
+                    padding: 10,
+                    cornerRadius: 8,
+                    callbacks: { label: ctx => ' ' + ctx.label + ': ' + ctx.parsed + ' tests' }
+                }
+            }
+        }
+    });
+
+});
+</script>
+{% endblock %}

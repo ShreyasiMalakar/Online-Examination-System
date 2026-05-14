@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Question{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold m-0"><i class="bi bi-pencil-square text-primary"></i> Add New Question</h3>
+                <a href="/teacher_dashboard" class="btn btn-outline-secondary btn-sm px-3 rounded-pill glass-card">Back</a>
+            </div>
+
+            <div class="glass-card p-4 p-md-5">
+                <form method="POST">
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary">Select Subject</label>
+                        <select name="subject" class="form-select" required>
+                            <option value="">-- Choose a category --</option>
+                            <option value="Maths">Maths</option>
+                            <option value="DBMS">DBMS</option>
+                            <option value="Operating System">Operating System</option>
+                            <option value="Computer Networks">Computer Networks</option>
+                            <option value="Python">Python</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary">Question Statement</label>
+                        <textarea name="question" class="form-control" rows="3" placeholder="Type the question here..." required></textarea>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-bold">Option 1</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted">A</span>
+                                <input type="text" name="o1" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-bold">Option 2</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted">B</span>
+                                <input type="text" name="o2" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-bold">Option 3</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted">C</span>
+                                <input type="text" name="o3" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-bold">Option 4</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-muted">D</span>
+                                <input type="text" name="o4" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary">Correct Answer</label>
+                        <select name="correct" class="form-select bg-light">
+                            <option value="1">Option A (1)</option>
+                            <option value="2">Option B (2)</option>
+                            <option value="3">Option C (3)</option>
+                            <option value="4">Option D (4)</option>
+                        </select>
+                    </div>
+
+                    <hr class="my-4 opacity-25">
+
+                    <button type="submit" class="btn btn-custom-primary w-100 py-3 fs-5 rounded-pill shadow-sm"><i class="bi bi-save me-2"></i>Save Question to Database</button>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

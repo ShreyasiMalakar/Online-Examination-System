@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Questions{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-list-check text-warning"></i> Manage Questions</h2>
+        <div>
+            <a href="/create_question" class="btn btn-custom-primary rounded-pill me-2"><i class="bi bi-plus-lg"></i> Add New</a>
+            <a href="/teacher_dashboard" class="btn btn-outline-secondary btn-sm px-3 rounded-pill glass-card">Back</a>
+        </div>
+    </div>
+
+    <div class="glass-card table-glass p-4">
+        {% if questions %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col" width="10%">ID</th>
+                        <th scope="col" width="15%">Subject</th>
+                        <th scope="col" width="55%">Question</th>
+                        <th scope="col" width="10%">Ans</th>
+                        <th scope="col" width="10%" class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for q in questions %}
+                    <tr>
+                        <td><strong>#{{ q[0] }}</strong></td>
+                        <td><span class="badge bg-secondary rounded-pill">{{ q[1] }}</span></td>
+                        <td class="text-truncate" style="max-width: 300px;">{{ q[2] }}</td>
+                        <td>{{ q[3] }}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-primary rounded-circle"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-outline-danger rounded-circle"><i class="bi bi-trash"></i></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center text-secondary py-5">
+            <i class="bi bi-inbox fs-1"></i>
+            <p class="mt-3">You haven't added any questions yet.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

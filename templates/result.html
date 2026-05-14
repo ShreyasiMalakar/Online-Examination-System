@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Test Result{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="glass-card p-5 text-center mt-4 position-relative overflow-hidden">
+                
+                <!-- Confetti/Decoration Background -->
+                <div class="position-absolute top-0 start-0 w-100 h-100 bg-success bg-opacity-10" style="z-index: 0;"></div>
+
+                <div class="position-relative" style="z-index: 1;">
+                    <div class="mb-4">
+                        {% if score/total >= 0.5 %}
+                            <i class="bi bi-patch-check-fill text-success" style="font-size: 5rem;"></i>
+                        {% else %}
+                            <i class="bi bi-shield-exclamation text-warning" style="font-size: 5rem;"></i>
+                        {% endif %}
+                    </div>
+
+                    <h2 class="fw-bold mb-3">Test Completed!</h2>
+                    <p class="text-secondary mb-4">Here is your final score:</p>
+
+                    <div class="display-3 fw-bold text-primary mb-4 p-4 rounded-circle d-inline-flex bg-white shadow-sm border border-primary border-opacity-25" style="width: 150px; height: 150px; align-items: center; justify-content: center;">
+                        {{ score }}<span class="fs-4 text-secondary ms-1">/{{ total }}</span>
+                    </div>
+
+                    {% if score/total >= 0.8 %}
+                        <div class="alert alert-success border-success bg-success bg-opacity-10 fw-bold">Outstanding Performance! 🏆</div>
+                    {% elif score/total >= 0.5 %}
+                        <div class="alert alert-primary border-primary bg-primary bg-opacity-10 fw-bold">Good Job! 👍</div>
+                    {% else %}
+                        <div class="alert alert-warning border-warning bg-warning bg-opacity-10 fw-bold">Keep Practicing! 💪</div>
+                    {% endif %}
+
+                    <a href="/student_dashboard" class="btn btn-custom-primary rounded-pill px-5 py-2 mt-4 shadow fw-bold">
+                        Back to Dashboard
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

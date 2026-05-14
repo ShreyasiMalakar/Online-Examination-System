@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Test Sequence{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="glass-card p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex bg-primary bg-opacity-10 text-primary rounded-circle p-3 mb-3">
+                        <i class="bi bi-file-earmark-plus fs-2"></i>
+                    </div>
+                    <h3 class="fw-bold m-0">Create New Test</h3>
+                    <p class="text-secondary small mt-1">Setup the basic details</p>
+                </div>
+
+                <form method="POST">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-secondary">Test Title</label>
+                        <input type="text" name="title" class="form-control form-control-lg" placeholder="e.g., Midterm Exam 2026" required>
+                    </div>
+
+                    <button class="btn btn-custom-primary w-100 py-3 rounded-pill fw-bold shadow-sm">
+                        Create Test <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                    
+                    <div class="text-center mt-3">
+                        <a href="/teacher_dashboard" class="btn btn-link text-decoration-none text-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
