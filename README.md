@@ -1,4 +1,3 @@
-````md
 # 🎓 Institutional Online Examination System
 
 A full-stack web-based Online Examination System developed using **Python Flask**, **MySQL**, **HTML/CSS**, and **Bootstrap**.  
